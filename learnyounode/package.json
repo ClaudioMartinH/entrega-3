@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "strftime": "^0.10.3",
+    "through2": "^4.0.2",
+    "through2-map": "^4.0.0"
+  }
+}
