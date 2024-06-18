@@ -4,6 +4,7 @@ import { readFileSync } from "fs";
 import * as fs from "fs";
 import * as path from "path";
 import * as http from "http";
+import * as bl from "bl";
 
 const rl = createInterface({
   input: process.stdin,
@@ -156,6 +157,23 @@ function httpClient(){
     }
   );
 }
+function httpCollect(){
+  rl.question(chalk.blueBright("This program performs an HTTP GET request to an URL provided as first argument in the console, and writes two lines to the console. The firsy line reoresents the nimber of characters recieved from the server and the second one contains the whole string sent by the server "), (userUrl) => {
+    http.get(userUrl, function callback(response: http.IncomingMessage) {
+  response.pipe(
+    bl.default((err: Error, data: Buffer) => {
+      if (err) {
+        return console.error(err);
+      }
+      const stringData = data.toString();
+      console.log(stringData.length);
+      console.log(stringData);
+    })
+  );
+});
+
+  } )
+}
 
 function selectOption() {
   rl.question(
@@ -184,6 +202,7 @@ function selectOption() {
           httpClient();
           break;
         case "8":
+          httpCollect();
           break;
         case "9":
           break;
