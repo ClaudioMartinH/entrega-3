@@ -7,7 +7,6 @@
   "name": "entrega-3",
   "version": "1.0.0",
   "description": "learnyounode",
-  "main": "index.js",
   "dependencies": {
     "acorn": "^8.11.3",
     "acorn-walk": "^8.3.2",
@@ -61,6 +60,7 @@
     "strftime": "^0.10.3",
     "strip-final-newline": "^3.0.0",
     "strip-literal": "^2.1.0",
+    "through2-map": "^4.0.0",
     "tinybench": "^2.8.0",
     "tinypool": "^0.8.4",
     "tinyspy": "^2.2.1",
