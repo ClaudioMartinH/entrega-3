@@ -3,6 +3,7 @@ import chalk from "chalk";
 import { readFileSync } from "fs";
 import * as fs from "fs";
 import * as path from "path";
+import * as http from "http";
 
 const rl = createInterface({
   input: process.stdin,
@@ -80,7 +81,7 @@ function myFirstAsyncIO() {
 }
 function filteredLs() {
   rl.question(
-    "I will filter for you in a folder the files with the extension you need. Type the folder as first argument and the extension you want to check as second argument with a blankspace in between: ",
+    chalk.cyanBright("I will filter for you in a folder the files with the extension you need. Type the folder as first argument and the extension you want to check as second argument with a blankspace in between: "),
     (answer) => {
       const [folder, extension] = answer.split(" ");
       fs.readdir(
@@ -91,7 +92,7 @@ function filteredLs() {
           }
           data.forEach(function (file) {
             if (path.extname(file) === "." + extension) {
-              console.log(file);
+              console.log(chalk.bgGreenBright(file));
             }
           });
         }
@@ -140,7 +141,21 @@ function makeItModular(){
       );
 });
 }
-
+function httpClient(){
+  rl.question(
+    chalk.blueBright(
+      " Write a program that performs an HTTP GET request to a URL provided to you as the first command-line argument. Write the String contents of each data event from the response to a new line on the console  "
+    ), (userUrl) =>{
+      http
+        .get(userUrl, function (response: http.IncomingMessage) {
+          response.setEncoding("utf-8");
+          response.on("data", console.log);
+          response.on("error", console.error);
+        })
+        .on("error", console.error);
+    }
+  );
+}
 
 function selectOption() {
   rl.question(
@@ -166,6 +181,7 @@ function selectOption() {
           makeItModular();
           break;
         case "7":
+          httpClient();
           break;
         case "8":
           break;
