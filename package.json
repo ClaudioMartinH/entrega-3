@@ -58,6 +58,7 @@
     "source-map-js": "^1.2.0",
     "stackback": "^0.0.2",
     "std-env": "^3.7.0",
+    "strftime": "^0.10.3",
     "strip-final-newline": "^3.0.0",
     "strip-literal": "^2.1.0",
     "tinybench": "^2.8.0",
