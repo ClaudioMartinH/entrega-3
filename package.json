@@ -1,6 +1,8 @@
 {
   "devDependencies": {
     "@types/node": "^20.14.5",
+    "@types/strftime": "^0.9.8",
+    "@types/through2-map": "^3.0.4",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
   },

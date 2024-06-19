@@ -5,6 +5,11 @@ import * as fs from "fs";
 import * as path from "path";
 import * as http from "http";
 import * as bl from "bl";
+import * as net from "net";
+import { Socket } from "net";
+import dateFormat from "strftime";
+import map from "through2-map"
+import * as url from "url";
 
 const rl = createInterface({
   input: process.stdin,
@@ -31,9 +36,14 @@ function showMenu() {
   console.log("\n");
 }
 function helloWorld() {
-  rl.question(chalk.cyanBright("Type the name you like: "), (name: string) => {
-    console.log(`Hello ${name}`);
-  });
+  rl.question(
+    chalk.cyanBright("Type the name you like and i'll wave you: "),
+    (name: string) => {
+      console.log(`Hello ${name}`);
+    }
+  );
+  showMenu();
+selectOption();
 }
 function babySteps() {
   rl.question(
@@ -50,6 +60,8 @@ function babySteps() {
       }
     }
   );
+  showMenu();
+selectOption();
 }
 function myFirstIO() {
   rl.question(
@@ -61,6 +73,8 @@ function myFirstIO() {
       console.log(chalk.blueBright(lines));
     }
   );
+  showMenu();
+selectOption();
 }
 function myFirstAsyncIO() {
   rl.question(
@@ -82,7 +96,9 @@ function myFirstAsyncIO() {
 }
 function filteredLs() {
   rl.question(
-    chalk.cyanBright("I will filter for you in a folder the files with the extension you need. Type the folder as first argument and the extension you want to check as second argument with a blankspace in between: "),
+    chalk.cyanBright(
+      "I will filter for you in a folder the files with the extension you need. Type the folder as first argument and the extension you want to check as second argument with a blankspace in between: "
+    ),
     (answer) => {
       const [folder, extension] = answer.split(" ");
       fs.readdir(
@@ -100,6 +116,8 @@ function filteredLs() {
       );
     }
   );
+  showMenu();
+selectOption();
 }
 function listFiles(
   dirName: string,
@@ -123,7 +141,7 @@ function listFiles(
     }
   );
 }
-function makeItModular(){
+function makeItModular() {
   rl.question(
     "I will filter for you in a folder the files with the extension you need. Type the folder as first argument and the extension you want to check as second argument with a blankspace in between: ",
     (answer) => {
@@ -140,13 +158,17 @@ function makeItModular(){
           });
         }
       );
-});
+    }
+  );
+  showMenu();
+selectOption();
 }
-function httpClient(){
+function httpClient() {
   rl.question(
     chalk.blueBright(
       " Write a program that performs an HTTP GET request to a URL provided to you as the first command-line argument. Write the String contents of each data event from the response to a new line on the console  "
-    ), (userUrl) =>{
+    ),
+    (userUrl) => {
       http
         .get(userUrl, function (response: http.IncomingMessage) {
           response.setEncoding("utf-8");
@@ -156,28 +178,161 @@ function httpClient(){
         .on("error", console.error);
     }
   );
+  showMenu();
+selectOption();
 }
-function httpCollect(){
-  rl.question(chalk.blueBright("This program performs an HTTP GET request to an URL provided as first argument in the console, and writes two lines to the console. The firsy line reoresents the nimber of characters recieved from the server and the second one contains the whole string sent by the server "), (userUrl) => {
-    http.get(userUrl, function callback(response: http.IncomingMessage) {
-  response.pipe(
-    bl.default((err: Error, data: Buffer) => {
-      if (err) {
-        return console.error(err);
-      }
-      const stringData = data.toString();
-      console.log(stringData.length);
-      console.log(stringData);
-    })
+function httpCollect() {
+  rl.question(
+    chalk.blueBright(
+      "This program performs an HTTP GET request to an URL provided as first argument in the console, and writes two lines to the console. The first line represents the number of characters recieved from the server and the second one contains the whole string sent by the server "
+    ),
+    (userUrl) => {
+      http.get(userUrl, function callback(response: http.IncomingMessage) {
+        response.pipe(
+          bl.default((err: Error, data: Buffer) => {
+            if (err) {
+              return console.error(err);
+            }
+            const stringData = data.toString();
+            console.log(stringData.length);
+            console.log(stringData);
+          })
+        );
+      });
+    }
   );
-});
-
-  } )
+  showMenu();
+selectOption();
 }
+function jugglingAsync() {
+  const results: string[] = [];
+  let counter: number = 0;
+  function showResults(): void {
+    for (let i: number = 0; i < 3; i++) {
+      console.log(results[i]);
+    }
+  }
+  rl.question(
+    chalk.blueBright(
+      "This program performs an HTTP GET request to three URL provided as first, second and third arguments in the console with a blankspace in between, and writes two lines to the console. The first line represents the number of characters recieved from the server and the second one contains the whole string sent by the server in each case "
+    ),
+    (userUrl) => {
+      function getHttp(index: number): void {
+        http.get(userUrl + index, (response: http.IncomingMessage) => {
+          response.pipe(
+            bl.default((err: Error, data: Buffer) => {
+              if (err) return console.error(err);
+              results[index] = data.toString();
+              counter++;
+              if (counter === 3) {
+                showResults();
+              }
+            })
+          );
+        });
+      }
+      for (let i = 0; i < 3; i++) {
+        getHttp(i);
+      }
+    }
+  );
+  showMenu();
+selectOption();
+}
+function timeServer() {
+  rl.question(chalk.blueBright(
+    "This program is a TCP server that listen to connections on the port you should provide as first argument, and it will write the current date and 24 hour time in the console "),
+    (port) => {
+      const server = net.createServer(function listener(socket: Socket) {
+        let now: Date = new Date();
+        let printTime: string = dateFormat("%Y-%m-%d %H:%M", now);
+        socket.write(printTime);
+        socket.end("\n");
+      });
+      server.listen(Number(port));
+    }
+  );
+  showMenu();
+selectOption();
+}
+function httpFileServer() {
+  rl.question(
+    chalk.blueBright(
+      "This program provides the same file for each connection. You should write the port as the first argument in the console, and the path to the file on the second argument, separated by a blankspace "
+    ),
+    (answer) => {
+      const [port, file] = answer.split(" ");
+      http
+        .createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
+          res.writeHead(200, { "Content-Type": "Text/Plain" });
+          fs.createReadStream(file).pipe(res);
+        })
+        .listen(Number(port));
+    }
+  );
+  showMenu();
+selectOption();
+}
+function httpUppercaserer() {
+  rl.question(chalk.blueBright("This program only recieves PORT requests and converts incoming POSTs body characters to upper-case and returns them to you. You should provide a port as first argument here: "), (port) => {
+    const server = http.createServer((req: http.IncomingMessage, res: http.OutgoingMessage) => {
+      if (req.method !== 'POST') {
+        return res.end('This is not a POST\n');
+      }
+    
+      req.pipe(map((chunk: { toString: () => string; }) => chunk.toString().toUpperCase())).pipe(res);
+    });
+    
+    server.listen(port);
+  });
+  showMenu();
+selectOption();
+}
+function httpJsonApiServer(){
+  rl.question(chalk.blueBright("This program se4rves JSON data when it recieves a GET request to the path '/api/parsetime', the request should contain a query string with a iso key and iso-format time as value. The JSON served contains hour, minute and second properties.\n As a secons endpoint '/api/unixtime' accepts the same query string but returns UNIX epoch time in miliseconds since 1 jan 1970.\n You should provide the port as first argument on the console to run the program.  "), (port)=>{
+    const endpoint1: string = "/api/parsetime";
+const endpoint2: string = "/api/unixtime";
+
+function parseDate(date: Date) {
+  return {
+    hour: date.getHours(),
+    minute: date.getMinutes(),
+    second: date.getSeconds()
+  };
+}
+function toUnixTime(date: Date) {
+  return { unixtime: date.getTime() };
+}
+
+http.createServer(function processDate(req: http.IncomingMessage, res: http.ServerResponse){
+  const parsedUrl = url.parse(req.url ?? "", true);
+  const dateValue = parsedUrl.query.iso as string;
+
+  const date: Date = new Date(dateValue);
+  let result;
+  if (parsedUrl.pathname === endpoint1){
+    result = parseDate(date);
+  } else if (parsedUrl.pathname === endpoint2){
+    result = toUnixTime(date);
+  } else {
+    res.writeHead(404);
+    res.end();
+    return;
+  }
+  let jsonObject: string = JSON.stringify(result);
+  res.writeHead(200, {"content-type":"application/json" });
+  res.end(jsonObject)
+}).listen(port);
+
+  })
+  showMenu();
+  selectOption();
+}
+
 
 function selectOption() {
-  rl.question(
-    "Type here the number of your selection: ",
+  rl.question(chalk.bgMagentaBright(
+    "Type here the number of your selection: "),
     (selection: string) => {
       switch (selection) {
         case "1":
@@ -205,14 +360,19 @@ function selectOption() {
           httpCollect();
           break;
         case "9":
+          jugglingAsync();
           break;
         case "10":
+          timeServer();
           break;
         case "11":
+          httpFileServer();
           break;
         case "12":
+          httpUppercaserer();
           break;
         case "13":
+          httpJsonApiServer();
           break;
         case "14":
           console.log(chalk.redBright.bold("Bye!!!"));
@@ -231,5 +391,4 @@ function selectOption() {
     }
   );
 }
-showMenu();
-selectOption();
+
