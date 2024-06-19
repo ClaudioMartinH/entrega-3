@@ -17,7 +17,7 @@ const rl = createInterface({
 });
 
 function showMenu() {
-  console.log(chalk.bgGreen.bold("Welcome to LearnYouNode CLI\n"));
+  console.log(chalk.bgGreen.bold("\nWelcome to LearnYouNode CLI\n"));
   console.log(chalk.bgGrey("Select an option from the ones behind\n"));
   console.log("1. Hello World");
   console.log("2. Baby Steps");
@@ -51,7 +51,7 @@ function helloWorld() {
 
 function babySteps() {
   rl.question(
-    "Type two numbers separated by a space you'd like to know their addition ",
+    chalk.cyanBright("\nType two numbers separated by a space you'd like to know their addition "),
     (answer) => {
       const [firstNumber, secondNumber] = answer.split(" ");
       if (firstNumber && secondNumber) {
@@ -68,7 +68,7 @@ function babySteps() {
 }
 function myFirstIO() {
   rl.question(
-    chalk.gray(
+    chalk.cyanBright(
       "Type the path to the text file you want to count the lines in it: "
     ),
     (answer) => {
@@ -82,7 +82,7 @@ function myFirstIO() {
 }
 function myFirstAsyncIO() {
   rl.question(
-    "Type the path to the text file you want to count the lines in it: ",
+    chalk.cyanBright("Type the path to the text file you want to count the lines in it: "),
     (answer) => {
       const pathToFile = answer;
       fs.readFile(
@@ -101,7 +101,7 @@ function myFirstAsyncIO() {
 }
 function filteredLs() {
   rl.question(
-    chalk.gray(
+    chalk.cyanBright(
       "I will filter for you in a folder the files with the extension you need. Type the folder as first argument and the extension you want to check as second argument with a blankspace in between: "
     ),
     (answer) => {
@@ -147,7 +147,7 @@ function listFiles(
 }
 function makeItModular() {
   rl.question(
-    chalk.gray(
+    chalk.cyanBright(
       "I will filter for you in a folder the files with the extension you need. Type the folder as first argument and the extension you want to check as second argument with a blankspace in between: "
     ),
     (answer) => {
@@ -162,6 +162,7 @@ function makeItModular() {
           data.forEach((file) => {
             console.log(chalk.bgBlackBright(`${file}`));
           });
+          endTask();
         }
       );
     }
@@ -169,7 +170,7 @@ function makeItModular() {
 }
 function httpClient() {
   rl.question(
-    chalk.gray(
+    chalk.cyanBright(
       "I will perform an HTTP GET request to a URL that you have to provide me as the first command-line argument. I will write the String contents of each data event from the response to a new line on the console  "
     ),
     (userUrl) => {
@@ -180,13 +181,13 @@ function httpClient() {
           response.on("end", () => {
             endTask();
           });
-          response.on("error", (err)=>{
+          response.on("error", (err) => {
             console.error(err);
             endTask();
           });
         })
-        .on("error", (err)=>{
-          console.error(err)
+        .on("error", (err) => {
+          console.error(err);
           endTask();
         });
     }
@@ -194,7 +195,7 @@ function httpClient() {
 }
 function httpCollect() {
   rl.question(
-    chalk.gray(
+    chalk.cyanBright(
       "This program performs an HTTP GET request to an URL provided as first argument in the console, and writes two lines to the console. The first line represents the number of characters recieved from the server and the second one contains the whole string sent by the server "
     ),
     (userUrl) => {
@@ -217,13 +218,17 @@ function httpCollect() {
 
 function jugglingAsync() {
   rl.question(
-    chalk.blueBright(
+    chalk.cyanBright(
       "This program performs an HTTP GET request to three URLs provided as first, second and third arguments in the console with a blank space in between, and writes the response of each request to the console."
     ),
     (userUrls) => {
       const urls = userUrls.split(" ");
       if (urls.length !== 3) {
-        console.log(chalk.red("You must provide me exactly three URLs separated by spaces."));
+        console.log(
+          chalk.red(
+            "You must provide me exactly three URLs separated by spaces."
+          )
+        );
         endTask();
         return;
       }
@@ -239,25 +244,27 @@ function jugglingAsync() {
       }
 
       function getHttp(index: number) {
-        http.get(urls[index], (res) => {
-          let data: string = '';
-          res.setEncoding('utf8');
-          res.on('data', (chunk) => data += chunk);
-          res.on('end', () => {
-            results[index] = data;
-            counter++;
-            if (counter === 3) {
-              showResults();
-            }
-          });
-          res.on('error', (err) => {
+        http
+          .get(urls[index], (res) => {
+            let data: string = "";
+            res.setEncoding("utf8");
+            res.on("data", (chunk) => (data += chunk));
+            res.on("end", () => {
+              results[index] = data;
+              counter++;
+              if (counter === 3) {
+                showResults();
+              }
+            });
+            res.on("error", (err) => {
+              console.error(err);
+              endTask();
+            });
+          })
+          .on("error", (err) => {
             console.error(err);
             endTask();
           });
-        }).on('error', (err) => {
-          console.error(err);
-          endTask();
-        });
       }
 
       for (let i = 0; i < 3; i++) {
@@ -268,7 +275,7 @@ function jugglingAsync() {
 }
 function timeServer() {
   rl.question(
-    chalk.gray(
+    chalk.cyanBright(
       "This program is a TCP server that listen to connections on the port you should provide as first argument, and it will write the current date and 24 hour time in the console "
     ),
     (port) => {
@@ -285,7 +292,7 @@ function timeServer() {
 }
 function httpFileServer() {
   rl.question(
-    chalk.gray(
+    chalk.cyanBright(
       "This program provides the same file for each connection. You should write the port as the first argument in the console, and the path to the file on the second argument, separated by a blankspace "
     ),
     (answer) => {
@@ -302,7 +309,7 @@ function httpFileServer() {
 }
 function httpUppercaserer() {
   rl.question(
-    chalk.gray(
+    chalk.cyanBright(
       "This program only recieves POST requests and converts incoming POSTs body characters to upper-case and returns them to you. You should provide a port as first argument here: "
     ),
     (port) => {
@@ -329,7 +336,7 @@ function httpUppercaserer() {
 }
 function httpJsonApiServer() {
   rl.question(
-    chalk.gray(
+    chalk.cyanBright(
       "This program se4rves JSON data when it recieves a GET request to the path '/api/parsetime', the request should contain a query string with a iso key and iso-format time as value. The JSON served contains hour, minute and second properties.\n As a secons endpoint '/api/unixtime' accepts the same query string but returns UNIX epoch time in miliseconds since 1 jan 1970.\n You should provide the port as first argument on the console to run the program.  "
     ),
     (port) => {
