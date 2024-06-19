@@ -303,7 +303,7 @@ function httpFileServer() {
 function httpUppercaserer() {
   rl.question(
     chalk.gray(
-      "This program only recieves PORT requests and converts incoming POSTs body characters to upper-case and returns them to you. You should provide a port as first argument here: "
+      "This program only recieves POST requests and converts incoming POSTs body characters to upper-case and returns them to you. You should provide a port as first argument here: "
     ),
     (port) => {
       const server = http.createServer(
