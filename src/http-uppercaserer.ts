@@ -1,15 +1,19 @@
-import { IncomingMessage, OutgoingMessage } from "http";
+import { IncomingMessage, ServerResponse } from "http";
 
 const http = require('http');
 const map = require('through2-map');
 const port = Number(process.argv[2])
 
-const server = http.createServer((req: IncomingMessage, res: OutgoingMessage) => {
+const server = http.createServer((req: IncomingMessage, res: ServerResponse) => {
   if (req.method !== 'POST') {
-    return res.end('This is not a POST\n');
+    res.end('This is not a POST\n');
+    return; 
   }
 
-  req.pipe(map((chunk: { toString: () => string; }) => chunk.toString().toUpperCase())).pipe(res);
+  req.pipe(map((chunk: { toString: () => string; }) => chunk.toString().toUpperCase())).pipe(res).on("error", (err: Error) => {
+    console.error(err);
+    res.end("Server error");
+  });
 });
 
 server.listen(port);
