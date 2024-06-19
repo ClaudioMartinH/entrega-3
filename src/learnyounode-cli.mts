@@ -17,7 +17,7 @@ const rl = createInterface({
 });
 
 function showMenu() {
-  console.log(chalk.bgGreen.bold("\nWelcome to LearnYouNode CLI\n"));
+  console.log(chalk.bgGreen.bold("Welcome to LearnYouNode CLI\n"));
   console.log(chalk.bgGrey("Select an option from the ones behind\n"));
   console.log("1. Hello World");
   console.log("2. Baby Steps");
@@ -298,7 +298,7 @@ function httpFileServer() {
     (answer) => {
       const [port, file] = answer.split(" ");
       http
-        .createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
+        .createServer((_req: http.IncomingMessage, res: http.ServerResponse) => {
           res.writeHead(200, { "Content-Type": "Text/Plain" });
           fs.createReadStream(file).pipe(res);
         })
