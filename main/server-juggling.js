@@ -1,3 +1,5 @@
+const http = require('http');
+
 const server1 = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end("Response from server 1");

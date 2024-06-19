@@ -8,7 +8,7 @@ import * as bl from "bl";
 import * as net from "net";
 import { Socket } from "net";
 import dateFormat from "strftime";
-import map from "through2-map"
+import map from "through2-map";
 import * as url from "url";
 
 const rl = createInterface({
@@ -17,8 +17,8 @@ const rl = createInterface({
 });
 
 function showMenu() {
-  console.log(chalk.bgGreen.bold("Welcome to LearnYouNode CLI"));
-  console.log(chalk.bgGrey("Select an option from the ones behing"));
+  console.log(chalk.bgGreen.bold("Welcome to LearnYouNode CLI\n"));
+  console.log(chalk.bgGrey("Select an option from the ones behind\n"));
   console.log("1. Hello World");
   console.log("2. Baby Steps");
   console.log("3. My first I/O");
@@ -35,13 +35,13 @@ function showMenu() {
   console.log("14. Exit");
   console.log("\n");
 }
-function endTask(){
+function endTask() {
   showMenu();
   selectOption();
 }
 function helloWorld() {
   rl.question(
-    chalk.cyanBright("Type the name you like and i'll wave you: "),
+    chalk.cyanBright("\nType the name you like and i'll wave you: "),
     (name: string) => {
       console.log(chalk.bgBlackBright(`\nHello ${name}\n`));
       endTask();
@@ -67,8 +67,10 @@ function babySteps() {
   );
 }
 function myFirstIO() {
-  rl.question(chalk.gray(
-    "Type the path to the text file you want to count the lines in it: "),
+  rl.question(
+    chalk.gray(
+      "Type the path to the text file you want to count the lines in it: "
+    ),
     (answer) => {
       const pathToFile = answer;
       const text = readFileSync(pathToFile, "utf-8");
@@ -144,8 +146,10 @@ function listFiles(
   );
 }
 function makeItModular() {
-  rl.question(chalk.gray(
-    "I will filter for you in a folder the files with the extension you need. Type the folder as first argument and the extension you want to check as second argument with a blankspace in between: "),
+  rl.question(
+    chalk.gray(
+      "I will filter for you in a folder the files with the extension you need. Type the folder as first argument and the extension you want to check as second argument with a blankspace in between: "
+    ),
     (answer) => {
       const [folder, extension] = answer.split(" ");
       listFiles(
@@ -173,10 +177,18 @@ function httpClient() {
         .get(userUrl, function (response: http.IncomingMessage) {
           response.setEncoding("utf-8");
           response.on("data", console.log);
-          response.on("error", console.error);
+          response.on("end", () => {
+            endTask();
+          });
+          response.on("error", (err)=>{
+            console.error(err);
+            endTask();
+          });
         })
-        .on("error", console.error);
-        endTask();
+        .on("error", (err)=>{
+          console.error(err)
+          endTask();
+        });
     }
   );
 }
@@ -193,8 +205,8 @@ function httpCollect() {
               return console.error(err);
             }
             const stringData = data.toString();
-            console.log(chalk.bgBlackBright(`${stringData.length}`));
-            console.log(chalk.bgBlackBright(`${stringData}`));
+            console.log(chalk.bgBlackBright(`\n${stringData.length}\n`));
+            console.log(chalk.bgBlackBright(`\n${stringData}\n`));
             endTask();
           })
         );
@@ -202,34 +214,52 @@ function httpCollect() {
     }
   );
 }
+
 function jugglingAsync() {
-  const results: string[] = [];
-  let counter: number = 0;
-  function showResults(): void {
-    for (let i: number = 0; i < 3; i++) {
-      console.log(chalk.bgBlackBright(`${results[i]}`));
-      endTask();
-    }
-  }
   rl.question(
-    chalk.gray(
-      "This program performs an HTTP GET request to three URL provided as first, second and third arguments in the console with a blankspace in between, and writes two lines to the console. The first line represents the number of characters recieved from the server and the second one contains the whole string sent by the server in each case "
+    chalk.blueBright(
+      "This program performs an HTTP GET request to three URLs provided as first, second and third arguments in the console with a blank space in between, and writes the response of each request to the console."
     ),
-    (userUrl) => {
-      function getHttp(index: number): void {
-        http.get(userUrl + index, (response: http.IncomingMessage) => {
-          response.pipe(
-            bl.default((err: Error, data: Buffer) => {
-              if (err) return console.error(err);
-              results[index] = data.toString();
-              counter++;
-              if (counter === 3) {
-                showResults();
-              }
-            })
-          );
+    (userUrls) => {
+      const urls = userUrls.split(" ");
+      if (urls.length !== 3) {
+        console.log(chalk.red("You must provide me exactly three URLs separated by spaces."));
+        endTask();
+        return;
+      }
+
+      const results: string[] = [];
+      let counter: number = 0;
+
+      function showResults() {
+        for (let i = 0; i < 3; i++) {
+          console.log(results[i]);
+        }
+        endTask();
+      }
+
+      function getHttp(index: number) {
+        http.get(urls[index], (res) => {
+          let data: string = '';
+          res.setEncoding('utf8');
+          res.on('data', (chunk) => data += chunk);
+          res.on('end', () => {
+            results[index] = data;
+            counter++;
+            if (counter === 3) {
+              showResults();
+            }
+          });
+          res.on('error', (err) => {
+            console.error(err);
+            endTask();
+          });
+        }).on('error', (err) => {
+          console.error(err);
+          endTask();
         });
       }
+
       for (let i = 0; i < 3; i++) {
         getHttp(i);
       }
@@ -237,8 +267,10 @@ function jugglingAsync() {
   );
 }
 function timeServer() {
-  rl.question(chalk.gray(
-    "This program is a TCP server that listen to connections on the port you should provide as first argument, and it will write the current date and 24 hour time in the console "),
+  rl.question(
+    chalk.gray(
+      "This program is a TCP server that listen to connections on the port you should provide as first argument, and it will write the current date and 24 hour time in the console "
+    ),
     (port) => {
       const server = net.createServer(function listener(socket: Socket) {
         let now: Date = new Date();
@@ -264,68 +296,89 @@ function httpFileServer() {
           fs.createReadStream(file).pipe(res);
         })
         .listen(Number(port));
-        endTask();
+      endTask();
     }
   );
 }
 function httpUppercaserer() {
-  rl.question(chalk.gray("This program only recieves PORT requests and converts incoming POSTs body characters to upper-case and returns them to you. You should provide a port as first argument here: "), (port) => {
-    const server = http.createServer((req: http.IncomingMessage, res: http.OutgoingMessage) => {
-      if (req.method !== 'POST') {
-        res.end('This is not a POST\n');
-        endTask();
-        return 
+  rl.question(
+    chalk.gray(
+      "This program only recieves PORT requests and converts incoming POSTs body characters to upper-case and returns them to you. You should provide a port as first argument here: "
+    ),
+    (port) => {
+      const server = http.createServer(
+        (req: http.IncomingMessage, res: http.OutgoingMessage) => {
+          if (req.method !== "POST") {
+            res.end("This is not a POST\n");
+            endTask();
+            return;
+          }
+
+          req
+            .pipe(
+              map((chunk: { toString: () => string }) =>
+                chunk.toString().toUpperCase()
+              )
+            )
+            .pipe(res);
+        }
+      );
+      server.listen(port);
+    }
+  );
+}
+function httpJsonApiServer() {
+  rl.question(
+    chalk.gray(
+      "This program se4rves JSON data when it recieves a GET request to the path '/api/parsetime', the request should contain a query string with a iso key and iso-format time as value. The JSON served contains hour, minute and second properties.\n As a secons endpoint '/api/unixtime' accepts the same query string but returns UNIX epoch time in miliseconds since 1 jan 1970.\n You should provide the port as first argument on the console to run the program.  "
+    ),
+    (port) => {
+      const endpoint1: string = "/api/parsetime";
+      const endpoint2: string = "/api/unixtime";
+
+      function parseDate(date: Date) {
+        return {
+          hour: date.getHours(),
+          minute: date.getMinutes(),
+          second: date.getSeconds(),
+        };
       }
-    
-      req.pipe(map((chunk: { toString: () => string; }) => chunk.toString().toUpperCase())).pipe(res);
-    });
-    server.listen(port);
-  });
+      function toUnixTime(date: Date) {
+        return { unixtime: date.getTime() };
+      }
+
+      http
+        .createServer(function processDate(
+          req: http.IncomingMessage,
+          res: http.ServerResponse
+        ) {
+          const parsedUrl = url.parse(req.url ?? "", true);
+          const dateValue = parsedUrl.query.iso as string;
+
+          const date: Date = new Date(dateValue);
+          let result;
+          if (parsedUrl.pathname === endpoint1) {
+            result = parseDate(date);
+          } else if (parsedUrl.pathname === endpoint2) {
+            result = toUnixTime(date);
+          } else {
+            res.writeHead(404);
+            res.end();
+            return;
+          }
+          let jsonObject: string = JSON.stringify(result);
+          res.writeHead(200, { "content-type": "application/json" });
+          res.end(jsonObject);
+          endTask();
+        })
+        .listen(port);
+    }
+  );
 }
-function httpJsonApiServer(){
-  rl.question(chalk.gray("This program se4rves JSON data when it recieves a GET request to the path '/api/parsetime', the request should contain a query string with a iso key and iso-format time as value. The JSON served contains hour, minute and second properties.\n As a secons endpoint '/api/unixtime' accepts the same query string but returns UNIX epoch time in miliseconds since 1 jan 1970.\n You should provide the port as first argument on the console to run the program.  "), (port)=>{
-    const endpoint1: string = "/api/parsetime";
-const endpoint2: string = "/api/unixtime";
-
-function parseDate(date: Date) {
-  return {
-    hour: date.getHours(),
-    minute: date.getMinutes(),
-    second: date.getSeconds()
-  };
-}
-function toUnixTime(date: Date) {
-  return { unixtime: date.getTime() };
-}
-
-http.createServer(function processDate(req: http.IncomingMessage, res: http.ServerResponse){
-  const parsedUrl = url.parse(req.url ?? "", true);
-  const dateValue = parsedUrl.query.iso as string;
-
-  const date: Date = new Date(dateValue);
-  let result;
-  if (parsedUrl.pathname === endpoint1){
-    result = parseDate(date);
-  } else if (parsedUrl.pathname === endpoint2){
-    result = toUnixTime(date);
-  } else {
-    res.writeHead(404);
-    res.end();
-    return;
-  }
-  let jsonObject: string = JSON.stringify(result);
-  res.writeHead(200, {"content-type":"application/json" });
-  res.end(jsonObject)
-  endTask();
-}).listen(port);
-
-  })
-}
-
 
 function selectOption() {
-  rl.question(chalk.bgMagentaBright(
-    "Type here the number of your selection: "),
+  rl.question(
+    chalk.bgMagentaBright("Type here the number of your selection: "),
     (selection: string) => {
       switch (selection) {
         case "1":
@@ -368,7 +421,7 @@ function selectOption() {
           httpJsonApiServer();
           break;
         case "14":
-          console.log(chalk.redBright.bold("Bye!!!"));
+          console.log(chalk.redBright.bold("\n Bye!!! \n"));
           rl.close();
           break;
         default:
