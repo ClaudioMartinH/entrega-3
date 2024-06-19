@@ -7,7 +7,7 @@
 - Tambien hay que bajarse el repositorio de github (https://github.com/ClaudioMartinH/entrega-3.git).
 - Una vez hayamos abierto nuestro editor de código en la carpeta que lo contenga, para instalar las dependencias necesarias para su ejecución, hay que ejecutar el comando **npm install** desde la consola.
 - Para compilar los archivos basta con acudir a la consola e introducir el comando **npm build**
-El orden de los archivos es el siguiente:
+El orden de los archivos es el siguiente:  
 1.- hello-world.js  
 2.- baby-steps.js  
 3.- my-first-io.js  
