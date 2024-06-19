@@ -77,7 +77,8 @@
   },
   "scripts": {
     "test": "test",
-    "build": "tsc"
+    "build": "tsc && mv dist/learnyounode-cli.js dist/learnyounode-cli.mjs",
+    "cli": "node ./dist/learnyounode-cli.mjs"
   },
   "keywords": [
     "learnyounode",
@@ -88,6 +89,6 @@
     "type": "git",
     "url": "git+https://github.com/ClaudioMartinH/entrega3.git"
   },
-  "author": "Claudio MArtin Herranz",
+  "author": "Claudio Martin Herranz",
   "license": "ISC"
 }
