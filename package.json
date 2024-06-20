@@ -77,7 +77,7 @@
   },
   "scripts": {
     "test": "test",
-    "build": "tsc && mv dist/learnyounode-cli.js dist/learnyounode-cli.mjs",
+    "build": "tsc && echo 'Archivos en dist:' && ls dist && mv dist/learnyounode-cli.js dist/learnyounode-cli.mjs",
     "cli": "node ./dist/learnyounode-cli.mjs"
   },
   "keywords": [
