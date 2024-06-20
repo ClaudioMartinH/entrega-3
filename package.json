@@ -76,7 +76,7 @@
     "yocto-queue": "^1.0.0"
   },
   "scripts": {
-    "build": "tsc && echo 'Archivos en dist:' && ls dist && mv dist/learnyounode-cli.mts dist/learnyounode-cli.mjs",
+    "build": "tsc && echo 'Archivos en dist:' && ls dist && mv src/learnyounode-cli.mts dist/learnyounode-cli.mjs",
     "cli": "node ./dist/learnyounode-cli.mjs"
   },
   "keywords": [
