@@ -90,5 +90,9 @@
     "url": "git+https://github.com/ClaudioMartinH/entrega3.git"
   },
   "author": "Claudio Martin Herranz",
-  "license": "ISC"
+  "license": "ISC", 
+  "include": [
+    "src/*.ts",
+    "src/*.mts"
+]
 }
